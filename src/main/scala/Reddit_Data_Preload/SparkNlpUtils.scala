@@ -1,31 +1,8 @@
 package Reddit_Data_Preload
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import org.apache.spark.ml.PipelineModel
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, SparkSession}
-
-
-// trait to hold the spark session
-trait SparkSessionWrapper {
-  // todo configure for s3
-  final val access_key: String = new ProfileCredentialsProvider().getCredentials.getAWSAccessKeyId
-  final val secret_key: String = new ProfileCredentialsProvider().getCredentials.getAWSSecretKey
-  lazy val sparkSession: SparkSession = SparkSession.builder().appName("Spark Utils").config("spark.master", "local").getOrCreate()
-  sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", access_key)
-  sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
-  sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-}
-
-// Trait to hold the NLP models/pipelines
-trait PreTrainedNlpWrapper {
-  // todo change paths!
-  final val entityModelPath: String = "/Users/briankalinowski/IdeaProjects/ScalaSparkPlaygroud/src/NLP_pretrained/recognize_entities_dl_en_2.1.0_2.4_1562946909722"
-  final val sentimentModelPath: String = "/Users/briankalinowski/IdeaProjects/ScalaSparkPlaygroud/src/NLP_pretrained/analyze_sentiment_en_2.1.0_2.4_1563204637489"
-  lazy val NERPipeline: PipelineModel = PipelineModel.load(this.entityModelPath)
-  lazy val sentimentPipeLine: PipelineModel = PipelineModel.load(this.sentimentModelPath)
-}
 
 
 object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with AwsS3Utils {
@@ -56,7 +33,6 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
 
     // Return formatted raw DataFrame
     formattedRedditData
-
   }
 
 
@@ -96,25 +72,6 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
     processedRedditData.filter(col("named_entity").rlike(searchTermRegex)) // filter out entities to better match the search term/phrase
       .drop("prime_id")
       .orderBy("named_entity")
-  }
-
-  def processAggregationData(jsonString: String, redditType: String): DataFrame = {
-    val countName = if (redditType.equals("C")) "comment_count" else "submission_count"
-    val jsonRDD: RDD[String] = this.sparkSession.sparkContext.parallelize(jsonString :: Nil)
-
-    val commentAggRaw: DataFrame = this.sparkSession.read
-      .option("inferSchema", value = true)
-      .option("header", value = true)
-      .option("multiLine", value = true)
-      .option("mode", "DROPMALFORMED")
-      .json(jsonRDD).toDF()
-      .select("aggs.*")
-      .select(explode(col("subreddit")))
-      .select("col.*")
-      .withColumnRenamed("doc_count", countName)
-      .withColumnRenamed("key", "subreddit")
-      .withColumn("load_ts", current_timestamp())
-    commentAggRaw
   }
 
 

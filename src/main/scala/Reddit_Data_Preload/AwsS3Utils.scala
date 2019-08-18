@@ -22,12 +22,12 @@ trait AwsS3Utils {
     data.coalesce(1).write.format("json").option("header", "true").save(this.commentsS3Bucket)
   }
 
-  def loadSubmissionAggData(data: DataFrame): Unit = {
-    data.coalesce(1).write.format("json").option("header", "true").save(this.submissionsAggS3Bucket)
+  def loadSubmissionAggData(data: DataFrame, fileName: String): Unit = {
+    data.coalesce(1).write.format("json").option("header", "true").save(this.submissionsAggS3Bucket + "/" + fileName)
   }
 
-  def loadCommentsAggData(data: DataFrame): Unit = {
-    data.coalesce(1).write.format("json").option("header", "true").save(this.commentsAggS3Bucket)
+  def loadCommentsAggData(data: DataFrame, fileName: String): Unit = {
+    data.coalesce(1).write.format("json").option("header", "true").save(this.commentsAggS3Bucket + "/" + fileName)
   }
 
   def clearSubmissionsData(): Unit = this.S3Client.deleteObject(this.submissionsS3Bucket, "reddit_submissions")
