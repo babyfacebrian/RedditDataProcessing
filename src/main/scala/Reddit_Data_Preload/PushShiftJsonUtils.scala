@@ -5,19 +5,23 @@ import scala.io.BufferedSource
 object PushShiftEndpoints {
 
   def getSubmissionsURL(searchTerm: String, subReddit: String): String = {
-    s"https://api.pushshift.io/reddit/search/submission/?q=$searchTerm&subreddit=$subReddit&fields=subreddit,title&after=24h&size=500"
+    s"https://api.pushshift.io/reddit/search/submission/?q=${this.formatSearchTerm(searchTerm)}&subreddit=$subReddit&fields=subreddit,title&after=24h&size=500"
   }
 
   def getCommentsURL(searchTerm: String, subReddit: String): String = {
-    s"https://api.pushshift.io/reddit/search/comment/?q=$searchTerm&subreddit=$subReddit&fields=subreddit,body&after=24h&size=500"
+    s"https://api.pushshift.io/reddit/search/comment/?q=${this.formatSearchTerm(searchTerm)}&subreddit=$subReddit&fields=subreddit,body&after=24h&size=500"
   }
 
   def getCommentsAggregation(searchTerm: String, frequency: String, timeFrame: String): String = {
-    s"https://api.pushshift.io/reddit/search/comment/?q=$searchTerm&aggs=subreddit&frequency=$frequency&after=$timeFrame&size=0"
+    s"https://api.pushshift.io/reddit/search/comment/?q=${this.formatSearchTerm(searchTerm)}&aggs=subreddit&frequency=$frequency&after=$timeFrame&size=0"
   }
 
   def getSubmissionsAggregation(searchTerm: String, frequency: String, timeFrame: String): String = {
-    s"https://api.pushshift.io/reddit/search/submission/?q=$searchTerm&aggs=subreddit&frequency=$frequency&after=$timeFrame&size=0"
+    s"https://api.pushshift.io/reddit/search/submission/?q=${this.formatSearchTerm(searchTerm)}&aggs=subreddit&frequency=$frequency&after=$timeFrame&size=0"
+  }
+
+  def formatSearchTerm(searchTerm: String): String = {
+    searchTerm.trim.replaceAll(" ", "%20")
   }
 
 }

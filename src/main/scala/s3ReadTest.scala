@@ -1,6 +1,6 @@
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, count, explode, monotonically_increasing_id}
+import org.apache.spark.sql.functions.{col, count}
 
 object s3ReadTest extends App {
 
@@ -12,14 +12,17 @@ object s3ReadTest extends App {
   sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
   sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
 
+  val bucketName = "s3a://reddit-data-sentiment-connect/sentiment-data-output/submissions_processed/reddit_submissions_NLP"
+
 
   val data = sparkSession.read
     .option("inferSchema", value = true)
     .option("header", value = true)
-    .json("s3a://reddit-data-sentiment-connect/sentiment-data-output/submissions_processed/reddit_submissions").toDF()
+    .json(bucketName).toDF()
 
   data.printSchema()
   data.show(false)
   data.select(count(col("*"))).show()
+  data.select("subreddit").distinct().show(false)
 
 }

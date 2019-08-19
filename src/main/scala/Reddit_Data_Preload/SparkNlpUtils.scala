@@ -55,7 +55,7 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
   }
 
 
-  def joinAndLoadProcessedData(nerData: DataFrame, sentimentData: DataFrame, searchTerm: String): DataFrame = {
+  def joinEntityAndSentimentData(nerData: DataFrame, sentimentData: DataFrame, searchTerm: String, fileType: String): DataFrame = {
 
     // Format the search term for filtering
     val searchTermRegex = s"${searchTerm.trim.toLowerCase}|${searchTerm.split(" ").map(_.capitalize).mkString(" ")}"
@@ -66,16 +66,29 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
       .withColumn("sentiment_confidence", explode(col("sentiment_confidence"))) // expand sentiment confidence array
       .withColumn("sentiment_confidence", col("sentiment_confidence").getField("confidence")) // get confidence value
       .withColumn("load_ts", current_timestamp()) // add timestamp column
-
-
-    // Return processed data
-    processedRedditData.filter(col("named_entity").rlike(searchTermRegex)) // filter out entities to better match the search term/phrase
       .drop("prime_id")
       .orderBy("named_entity")
+    processedRedditData
+
+
+    // todo Fix this part its messay
+
+//    if (fileType == "C") {
+//      processedRedditData.filter(col("named_entity").rlike(searchTermRegex))
+//    } else {
+//      // Check to see if filtering by the search term removes all or too much data
+//      val filterCountCheck: Long = processedRedditData.filter(col("named_entity").rlike(searchTermRegex)).count()
+//      if (filterCountCheck < 10) {
+//        processedRedditData
+//      } else {
+//        // filter out entities to better match the search term/phrase
+//        processedRedditData.filter(col("named_entity").rlike(searchTermRegex))
+//      }
+//    }
+
   }
 
 
-  // todo Fix this it needs to be updated
   def processNlpAggregation(processedData: DataFrame): DataFrame = {
     processedData.groupBy("subreddit", "named_entity").agg(
       sum(when(col("sentiment") === "positive", 1).otherwise(0)).as("positive_count"), // sum of positive sentences
