@@ -1,7 +1,7 @@
 package Reddit_Data_Preload
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions._
 
 
@@ -13,7 +13,7 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
       if (dataType.equals("C")) "body" else if (dataType.equals("S")) "title" else throw new Exception
     }
 
-    val jsonRDD: RDD[String] = this.sparkSession.sparkContext.parallelize(jsonString :: Nil)
+    val jsonRDD: RDD[String] = this.sparkSession.sparkContext.parallelize(jsonString :: Nil, numSlices = 500)
 
     // Read raw json RDD
     val rawRedditData: DataFrame = this.sparkSession.read
@@ -57,9 +57,6 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
 
   def joinEntityAndSentimentData(nerData: DataFrame, sentimentData: DataFrame, searchTerm: String, fileType: String): DataFrame = {
 
-    // Format the search term for filtering
-    val searchTermRegex = s"${searchTerm.trim.toLowerCase}|${searchTerm.split(" ").map(_.capitalize).mkString(" ")}"
-
     val processedRedditData = nerData.join(sentimentData, Seq("prime_id", "subreddit"), "inner")
       .withColumn("named_entity", explode(col("named_entity"))) // expand named entities array
       .withColumn("sentiment", explode(col("sentiment"))) // expand sentiment array
@@ -69,22 +66,6 @@ object SparkNlpUtils extends SparkSessionWrapper with PreTrainedNlpWrapper with 
       .drop("prime_id")
       .orderBy("named_entity")
     processedRedditData
-
-
-    // todo Fix this part its messay
-
-//    if (fileType == "C") {
-//      processedRedditData.filter(col("named_entity").rlike(searchTermRegex))
-//    } else {
-//      // Check to see if filtering by the search term removes all or too much data
-//      val filterCountCheck: Long = processedRedditData.filter(col("named_entity").rlike(searchTermRegex)).count()
-//      if (filterCountCheck < 10) {
-//        processedRedditData
-//      } else {
-//        // filter out entities to better match the search term/phrase
-//        processedRedditData.filter(col("named_entity").rlike(searchTermRegex))
-//      }
-//    }
 
   }
 

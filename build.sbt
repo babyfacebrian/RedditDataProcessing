@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-mllib" % sparkVersion
 )
 
-libraryDependencies += "com.johnsnowlabs.nlp" %% "spark-nlp" % "2.1.0"
+libraryDependencies += "com.johnsnowlabs.nlp" %% "spark-nlp" % "2.2.0"
 
 // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bundle
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-bundle" % "1.11.375"
