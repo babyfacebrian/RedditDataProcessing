@@ -6,13 +6,12 @@ import org.apache.spark.sql.{DataFrame, SaveMode}
 
 trait AwsS3Utils {
 
-  private final val submissionsS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/submissions_processed/reddit_submissions_NLP"
-  private final val commentsS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/comments_processed/reddit_comments_NLP"
-  private final val submissionsAggS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/aggregations_processed/submissions_agg"
-  private final val commentsAggS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/aggregations_processed/comments_agg"
+  final val submissionsS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/submissions_processed/reddit_submissions_NLP"
+  final val commentsS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/comments_processed/reddit_comments_NLP"
+  final val submissionsAggS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/aggregations_processed/submissions_agg"
+  final val commentsAggS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/aggregations_processed/comments_agg"
 
   private val S3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_2).build()
-
 
   def loadSubmissionsData(data: DataFrame): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)

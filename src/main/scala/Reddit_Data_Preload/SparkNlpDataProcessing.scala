@@ -3,18 +3,9 @@ package Reddit_Data_Preload
 import org.apache.spark.sql.DataFrame
 
 
-case class SparkNlpDataProcessing(redditJson: String, searchTerm: String, fileType: String) {
+case class SparkNlpDataProcessing(redditJson: String, fileType: String, searchTerm: String) {
 
-  private val nlpData = this.createNlpData
-
-  private def createNlpData: DataFrame = {
-    val rawData: DataFrame = SparkNlpUtils.processRawJSON(redditJson, fileType)
-    val nerData: DataFrame = SparkNlpUtils.processNERData(rawData)
-    val sentimentData: DataFrame = SparkNlpUtils.processSentimentData(rawData)
-    val processedData: DataFrame = SparkNlpUtils.joinEntityAndSentimentData(nerData, sentimentData, searchTerm, fileType)
-    val NlpAggregationData: DataFrame = SparkNlpUtils.processNlpAggregation(processedData)
-    NlpAggregationData
-  }
+  private val nlpData = SparkNlpUtils.processNlpData(redditJson, fileType, searchTerm)
 
   def getNLPData: DataFrame = this.nlpData
 
@@ -32,43 +23,5 @@ case class SparkNlpDataProcessing(redditJson: String, searchTerm: String, fileTy
 }
 
 
-
-/*
-
- VERSION 1 (still a work in progress)
-
-case class SparkNlpDataProcessing(redditJson: String, searchTerm: String, fileType: String) {
-  // Process Raw JSON data
-  private val rawData: DataFrame = SparkNlpUtils.processRawJSON(redditJson, fileType)
-
-  // Entity extraction
-  private val nerData: DataFrame = SparkNlpUtils.processNERData(rawData)
-
-  // Sentiment Extraction
-  private val sentimentData: DataFrame = SparkNlpUtils.processSentimentData(rawData)
-
-  // Join Entity and Sentiment data
-  private val processedData: DataFrame = SparkNlpUtils.joinEntityAndSentimentData(nerData, sentimentData, searchTerm, fileType)
-
-  // Final NLP data
-  private val NlpAggregationData: DataFrame = SparkNlpUtils.processNlpAggregation(processedData)
-
-  def getProcessedData: DataFrame = this.processedData
-
-  def getNLPData: DataFrame = this.NlpAggregationData
-
-  def loadData(): Unit = {
-    fileType match {
-      case "C" =>
-        SparkNlpUtils.loadCommentsData(this.NlpAggregationData)
-        println("Comment Data Loaded")
-      case "S" =>
-        SparkNlpUtils.loadSubmissionsData(this.NlpAggregationData)
-        println("Submission Data Loaded")
-      case _ => println("File Type is incorrect: Must be C: (comments), or S: (submissions)")
-    }
-  }
-}
-*/
 
 

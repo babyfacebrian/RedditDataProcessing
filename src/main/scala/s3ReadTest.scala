@@ -1,28 +1,18 @@
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import org.apache.spark.sql.SparkSession
+import Reddit_Data_Preload.{AwsS3Utils, SparkSessionWrapper}
 import org.apache.spark.sql.functions.{col, count}
 
-object s3ReadTest extends App {
+object s3ReadTest extends App with SparkSessionWrapper with AwsS3Utils {
 
-  final val access_key: String = new ProfileCredentialsProvider().getCredentials.getAWSAccessKeyId
-  final val secret_key: String = new ProfileCredentialsProvider().getCredentials.getAWSSecretKey
+  val bucketName = this.commentsS3Bucket
 
-  val sparkSession = SparkSession.builder().appName("testing").config("spark.master", "local").getOrCreate()
-  sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", access_key)
-  sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
-  sparkSession.sparkContext.hadoopConfiguration.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-
-  val bucketName = "s3a://reddit-data-sentiment-connect/sentiment-data-output/submissions_processed/reddit_submissions_NLP"
-
-
-  val data = sparkSession.read
+  val data = this.sparkSession.read
     .option("inferSchema", value = true)
     .option("header", value = true)
     .json(bucketName).toDF()
 
   data.printSchema()
-  data.show(false)
-  data.select(count(col("*"))).show()
-  data.select("subreddit").distinct().show(false)
+  data.show()
+  //  data.select(count(col("*"))).show()
+  //  data.select("subreddit").distinct().show(false)
 
 }
