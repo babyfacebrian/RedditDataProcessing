@@ -11,7 +11,7 @@ object s3ReadTest extends App with SparkSessionWrapper with AwsS3Utils {
     .json(bucketName).toDF()
 
   data.printSchema()
-  data.show()
+  data.show(100)
   //  data.select(count(col("*"))).show()
   //  data.select("subreddit").distinct().show(false)
 

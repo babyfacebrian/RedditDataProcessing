@@ -21,7 +21,7 @@ object PreLoadDataApp extends App {
 //  })
 
 
-  runDataPreLoad(searchTerm = "Amazon", subreddit = "AskReddit", fileType = "C")
+  runDataPreLoad(searchTerm = "Lion King", subreddit = "movies", fileType = "C")
 
   def loadComments(searchTerm: String, subreddit: String, fileType: String): Unit = {
     val jsonData = PushShiftJsonUtils.downloadCommentsJson(searchTerm, subreddit)
