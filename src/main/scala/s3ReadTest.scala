@@ -9,6 +9,7 @@ object s3ReadTest extends App with SparkSessionWrapper with AwsS3Utils {
     .option("inferSchema", value = true)
     .option("header", value = true)
     .json(bucketName).toDF()
+    .where(col("named_entities").rlike("Trump") && col("subreddit") === "politics")
 
   data.printSchema()
   data.show(100)

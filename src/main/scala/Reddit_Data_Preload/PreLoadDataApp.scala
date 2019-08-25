@@ -20,19 +20,18 @@ object PreLoadDataApp extends App {
 //    println(s"FINISHED: $name")
 //  })
 
-
-  runDataPreLoad(searchTerm = "Lion King", subreddit = "movies", fileType = "C")
+  runDataPreLoad(searchTerm = "Trump", subreddit = "politics", fileType = "C")
 
   def loadComments(searchTerm: String, subreddit: String, fileType: String): Unit = {
     val jsonData = PushShiftJsonUtils.downloadCommentsJson(searchTerm, subreddit)
     val processor = SparkNlpDataProcessing(jsonData, fileType, searchTerm)
-    processor.loadData()
+    processor.loadData(searchTerm: String, subreddit: String)
   }
 
   def loadSubmissions(searchTerm: String, subreddit: String, fileType: String): Unit = {
     val jsonData = PushShiftJsonUtils.downloadSubmissionsJson(searchTerm, subreddit)
     val processor = SparkNlpDataProcessing(jsonData, fileType, searchTerm)
-    processor.loadData()
+    processor.loadData(searchTerm: String, subreddit: String)
   }
 
   def runDataPreLoad(searchTerm: String, subreddit: String, fileType: String): Unit = {

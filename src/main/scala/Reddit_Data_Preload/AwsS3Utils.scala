@@ -11,7 +11,6 @@ trait AwsS3Utils {
   final val submissionsAggS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/aggregations_processed/submissions_agg"
   final val commentsAggS3Bucket = "s3a://reddit-data-sentiment-connect/sentiment-data-output/aggregations_processed/comments_agg"
 
-  private val S3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_2).build()
 
   def loadSubmissionsData(data: DataFrame): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)
@@ -20,7 +19,7 @@ trait AwsS3Utils {
       .save(this.submissionsS3Bucket)
   }
 
-  def loadCommentsData(data: DataFrame): Unit = {
+  def loadCommentsData(data: DataFrame, searchTerm: String, subReddit: String): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)
       .format("json")
       .option("header", "true")
@@ -40,13 +39,5 @@ trait AwsS3Utils {
       .option("header", "true")
       .save(this.commentsAggS3Bucket)
   }
-
-  def clearSubmissionsData(): Unit = this.S3Client.deleteObject(this.submissionsS3Bucket, "reddit_submissions")
-
-  def clearCommentsData(): Unit = this.S3Client.deleteObject(this.commentsS3Bucket, "reddit_comments")
-
-  def clearSubmissionsAggData(): Unit = this.S3Client.deleteObject(this.submissionsAggS3Bucket, "submissions_agg")
-
-  def clearCommentsAggData(): Unit = this.S3Client.deleteObject(this.commentsAggS3Bucket, "comments_agg")
 
 }

@@ -9,10 +9,10 @@ case class SparkNlpDataProcessing(redditJson: String, fileType: String, searchTe
 
   def getNLPData: DataFrame = this.nlpData
 
-  def loadData(): Unit = {
+  def loadData(searchTerm: String, subReddit: String): Unit = {
     fileType match {
       case "C" =>
-        SparkNlpUtils.loadCommentsData(this.nlpData)
+        SparkNlpUtils.loadCommentsData(this.nlpData, searchTerm: String, subReddit: String)
         println("Comment Data Loaded")
       case "S" =>
         SparkNlpUtils.loadSubmissionsData(this.nlpData)
