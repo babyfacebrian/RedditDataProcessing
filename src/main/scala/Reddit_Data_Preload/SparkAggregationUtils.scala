@@ -7,6 +7,7 @@ import org.apache.spark.sql.functions.{col, current_timestamp, explode, lit}
 object SparkAggregationUtils extends SparkSessionWrapper with AwsS3Utils {
 
   def processAggregationJSON(jsonString: String, searchTerm: String, dataType: String, frequency: String, timeFrame: String): DataFrame = {
+
     val countName: String = if (dataType.equals("C")) "comment_count" else "submission_count"
     val jsonRDD: RDD[String] = this.sparkSession.sparkContext.parallelize(jsonString :: Nil)
     val searchTermColumn: String = searchTerm.trim.toLowerCase
@@ -37,6 +38,7 @@ object SparkAggregationUtils extends SparkSessionWrapper with AwsS3Utils {
 }
 
 case class SparkAggregationProcessing(redditJson: String, searchTerm: String, fileType: String, frequency: String, timeFrame: String) {
+
   private val redditAggregationData = SparkAggregationUtils.processAggregationJSON(redditJson, searchTerm, fileType, frequency, timeFrame)
 
   def getAggregationData: DataFrame = this.redditAggregationData

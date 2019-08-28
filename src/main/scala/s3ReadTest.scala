@@ -1,19 +1,28 @@
 import Reddit_Data_Preload.{AwsS3Utils, SparkSessionWrapper}
-import org.apache.spark.sql.functions.{col, count}
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions.col
 
 object s3ReadTest extends App with SparkSessionWrapper with AwsS3Utils {
 
-  val bucketName = this.commentsS3Bucket
+  def getCommentsData(searchTerm: String, subReddit: String): DataFrame = {
+    this.sparkSession.read
+      .option("inferSchema", value = true)
+      .option("header", value = true)
+      .json(this.commentsS3Bucket).toDF()
+      .where(col("named_entities").rlike(searchTerm) && col("subreddit") === subReddit)
+  }
 
-  val data = this.sparkSession.read
-    .option("inferSchema", value = true)
-    .option("header", value = true)
-    .json(bucketName).toDF()
-    .where(col("named_entities").rlike("Trump") && col("subreddit") === "politics")
+  def getSubmissionsData(searchTerm: String, subReddit: String): DataFrame = {
+    this.sparkSession.read
+      .option("inferSchema", value = true)
+      .option("header", value = true)
+      .json(this.submissionsS3Bucket).toDF()
+      .where(col("named_entities").rlike(searchTerm) && col("subreddit") === subReddit)
+  }
 
-  data.printSchema()
-  data.show(100)
-  //  data.select(count(col("*"))).show()
-  //  data.select("subreddit").distinct().show(false)
+  val test = getCommentsData("Trump", "politics")
+  test.show()
+
+
 
 }

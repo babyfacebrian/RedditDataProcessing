@@ -1,7 +1,5 @@
 package Reddit_Data_Preload
 
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import org.apache.spark.sql.{DataFrame, SaveMode}
 
 trait AwsS3Utils {

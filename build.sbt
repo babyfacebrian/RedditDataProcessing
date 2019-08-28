@@ -14,7 +14,6 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "com.johnsnowlabs.nlp" %% "spark-nlp" % "2.2.0"
 
-// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bundle
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-bundle" % "1.11.375"
 
 dependencyOverrides += "org.apache.hadoop" % "hadoop-common" % "3.2.0"
