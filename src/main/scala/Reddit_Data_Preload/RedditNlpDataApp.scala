@@ -1,26 +1,15 @@
 package Reddit_Data_Preload
 
 
-object PreLoadDataApp extends App {
+object RedditNlpDataApp extends App {
 
-  val democraticRunners = List("Michael Bennet", "Cory Booker",
-    "Steve Bullock", "Pete Buttigieg", "Julian Castro", "John Delaney", "Tulsi Gabbard",
-    "Kristen Gillibrand", "Kamala Harris", "Amy Klobuchar", "Wayne Messam", "Beto O'Rourke",
-    "Tim Ryan", "Bernie Sanders", "Joe Sestak", "Tom Steyer", "Marianne Williamson")
-
-//  democraticRunners.foreach(name => {
-//    println(s"NAME: $name")
-//    runDataPreLoad(name, "politics", "S")
-//    println(s"FINISHED: $name")
-//  })
-
-//  democraticRunners.foreach(name => {
-//    println(s"STARTING: $name")
-//    runDataPreLoad(name, "politics", "C")
-//    println(s"FINISHED: $name")
-//  })
-
-  runDataPreLoad(searchTerm = "Trump", subreddit = "politics", fileType = "C")
+  args.length match {
+    case 0 => println("No args Program stopped")
+    case 3 =>
+      println(s"3 args: ${args(0)}, ${args(1)}, ${args(2)}")
+      runDataPreLoad(args(0), args(1), args(2))
+    case _ => println("ERROR: Args must be: searchTerm -> subreddit -> (C or S)")
+  }
 
   def loadComments(searchTerm: String, subreddit: String, fileType: String): Unit = {
     val jsonData = PushShiftJsonUtils.downloadCommentsJson(searchTerm, subreddit)
