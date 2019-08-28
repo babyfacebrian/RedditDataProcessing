@@ -12,28 +12,28 @@ trait AwsS3Utils {
 
   def loadSubmissionsData(data: DataFrame): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)
-      .format("json")
+      .format(source = "json")
       .option("header", "true")
       .save(this.submissionsS3Bucket)
   }
 
   def loadCommentsData(data: DataFrame, searchTerm: String, subReddit: String): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)
-      .format("json")
+      .format(source = "json")
       .option("header", "true")
       .save(this.commentsS3Bucket)
   }
 
   def loadSubmissionAggData(data: DataFrame): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)
-      .format("json")
+      .format(source = "json")
       .option("header", "true")
       .save(this.submissionsAggS3Bucket)
   }
 
   def loadCommentsAggData(data: DataFrame): Unit = {
     data.coalesce(numPartitions = 1).write.mode(SaveMode.Append)
-      .format("json")
+      .format(source = "json")
       .option("header", "true")
       .save(this.commentsAggS3Bucket)
   }

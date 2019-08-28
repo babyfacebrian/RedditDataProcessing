@@ -5,13 +5,11 @@ import org.apache.spark.sql.SparkSession
 
 trait SparkSessionWrapper {
 
-  // todo configure for s3
   final val access_key: String = new ProfileCredentialsProvider().getCredentials.getAWSAccessKeyId
   final val secret_key: String = new ProfileCredentialsProvider().getCredentials.getAWSSecretKey
 
   lazy val sparkSession: SparkSession = SparkSession.builder()
-    .appName("NLP Processing")
-    .master("local[*]")
+    .appName(name = "NLP Processing")
     .config("spark.driver.memory", "12G")
     .config("spark.kryoserializer.buffer.max", "200M")
     .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
