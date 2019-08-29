@@ -1,6 +1,3 @@
-package RedditDataPreload
-
-
 object PushShiftEndpoints {
 
   def getSubmissionsURL(searchTerm: String, subReddit: String): String = {
@@ -27,8 +24,7 @@ object PushShiftEndpoints {
 
 object PushShiftJsonUtils {
 
-  import scala.io.Source
-  import scala.io.BufferedSource
+  import scala.io.{BufferedSource, Source}
 
   def downloadSubmissionsJson(searchTerm: String, subReddit: String): String = {
     val pushShiftURL: String = PushShiftEndpoints.getSubmissionsURL(searchTerm, subReddit)

@@ -1,5 +1,3 @@
-package RedditDataPreload
-
 
 object RedditNlpDataApp extends App {
 

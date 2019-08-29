@@ -1,5 +1,3 @@
-package RedditDataPreload
-
 import org.apache.spark.sql.{DataFrame, SaveMode}
 
 trait AwsS3Utils {

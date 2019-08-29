@@ -1,5 +1,3 @@
-package RedditDataPreload
-
 import com.johnsnowlabs.nlp.annotator._
 import com.johnsnowlabs.nlp.annotators.ner.NerConverter
 import com.johnsnowlabs.nlp.base.{DocumentAssembler, Finisher}
@@ -7,7 +5,6 @@ import org.apache.spark.ml.Pipeline
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
-
 
 object SparkNlpUtils extends SparkSessionWrapper with AwsS3Utils {
 
@@ -50,9 +47,10 @@ object SparkNlpUtils extends SparkSessionWrapper with AwsS3Utils {
 
 
   def processNlpData(jsonString: String, dataType: String, searchTerm: String): DataFrame = {
-    import sparkSession.implicits._
 
     val data = this.processRawJSON(jsonString, dataType)
+
+    import this.sparkSession.implicits._
 
     val result = this.pipeline.fit(Seq.empty[String].toDS.toDF("text")).transform(data)
       .withColumn("entity_type", explode(array_except(col("finished_ner"), lit(Array("O")))))

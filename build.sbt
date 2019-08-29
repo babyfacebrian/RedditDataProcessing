@@ -23,11 +23,9 @@ dependencyOverrides += "org.apache.hadoop" % "hadoop-common" % "3.2.0"
 dependencyOverrides += "org.apache.hadoop" % "hadoop-mapreduce-client-core" % "3.2.0"
 
 assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.concat
-  case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
-    oldStrategy(x)
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case _ => MergeStrategy.last
 }
 
-mainClass in assembly := Some("RedditDataPreload.RedditNlpDataApp")
+mainClass in assembly := Some("RedditNlpDataApp")
 

@@ -1,5 +1,3 @@
-package RedditDataPreload
-
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import org.apache.spark.sql.SparkSession
 

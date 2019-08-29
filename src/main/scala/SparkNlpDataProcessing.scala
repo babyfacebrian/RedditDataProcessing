@@ -1,7 +1,4 @@
-package RedditDataPreload
-
 import org.apache.spark.sql.DataFrame
-
 
 case class SparkNlpDataProcessing(redditJson: String, fileType: String, searchTerm: String) {
 
@@ -21,7 +18,3 @@ case class SparkNlpDataProcessing(redditJson: String, fileType: String, searchTe
     }
   }
 }
-
-
-
-

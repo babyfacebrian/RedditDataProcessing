@@ -1,5 +1,3 @@
-package RedditDataPreload
-
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{col, current_timestamp, explode, lit}
