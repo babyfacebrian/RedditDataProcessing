@@ -1,4 +1,4 @@
-package Reddit_Data_Preload
+package RedditDataPreload
 
 import com.johnsnowlabs.nlp.annotator._
 import com.johnsnowlabs.nlp.annotators.ner.NerConverter

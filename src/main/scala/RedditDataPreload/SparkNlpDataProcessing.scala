@@ -1,4 +1,4 @@
-package Reddit_Data_Preload
+package RedditDataPreload
 
 import org.apache.spark.sql.DataFrame
 

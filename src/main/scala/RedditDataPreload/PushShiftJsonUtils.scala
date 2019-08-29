@@ -1,4 +1,4 @@
-package Reddit_Data_Preload
+package RedditDataPreload
 
 
 object PushShiftEndpoints {
