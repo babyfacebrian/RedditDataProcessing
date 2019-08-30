@@ -8,6 +8,7 @@ import org.apache.spark.sql.functions._
 
 object SparkNlpUtils extends SparkSessionWrapper with AwsS3Utils {
 
+  // Spark NLP pipeline Stages
   private val document: DocumentAssembler = new DocumentAssembler()
     .setInputCol("text")
     .setOutputCol("document")
@@ -42,6 +43,8 @@ object SparkNlpUtils extends SparkSessionWrapper with AwsS3Utils {
     .setOutputAsArray(true)
     .setCleanAnnotations(true)
 
+
+  // Main Spark NLP pipeline
   private val pipeline: Pipeline = new Pipeline()
     .setStages(Array(document, token, normalizer, wordEmbeddings, ner, nerConverter, vivekn, finisher))
 
@@ -53,20 +56,20 @@ object SparkNlpUtils extends SparkSessionWrapper with AwsS3Utils {
     import this.sparkSession.implicits._
 
     val result = this.pipeline.fit(Seq.empty[String].toDS.toDF("text")).transform(data)
-      .withColumn("entity_type", explode(array_except(col("finished_ner"), lit(Array("O")))))
-      .withColumn("sentiment_confidence", explode(col("finished_result_sentiment_metadata._2")))
-      .withColumn("sentiment", explode(col("finished_result_sentiment")))
-      .withColumn("named_entities", explode(array_intersect(col("finished_ner_converter"), lit(Array(searchTerm)))))
+      .withColumn(colName = "entity_type", col = explode(array_except(col("finished_ner"), lit(Array("O")))))
+      .withColumn(colName = "sentiment_confidence", col = explode(col("finished_result_sentiment_metadata._2")))
+      .withColumn(colName = "sentiment", col = explode(col("finished_result_sentiment")))
+      .withColumn(colName = "named_entities", col = explode(array_intersect(col("finished_ner_converter"), lit(Array(searchTerm)))))
       .select("subreddit", "named_entities", "entity_type", "sentiment", "sentiment_confidence")
 
     // NLP Aggregations
     val nlpData = result.groupBy("subreddit", "named_entities", "entity_type")
       .agg(
-        sum(when(col("sentiment") === "positive", 1).otherwise(0)).as("positive_count"),
-        mean(when(col("sentiment") === "positive", col("sentiment_confidence")).otherwise(0.0)).as("positive_confidence_avg"),
-        sum(when(col("sentiment") === "negative", 1).otherwise(0)).as("negative_count"),
-        mean(when(col("sentiment") === "negative", col("sentiment_confidence")).otherwise(0.0)).as("negative_confidence_avg"))
-      .withColumn("load_ts", current_timestamp())
+        sum(when(col(colName = "sentiment") === "positive", value = 1).otherwise(value = 0)).as(alias = "positive_count"),
+        mean(when(col(colName = "sentiment") === "positive", col(colName = "sentiment_confidence")).otherwise(value = 0.0)).as(alias = "positive_confidence_avg"),
+        sum(when(col(colName = "sentiment") === "negative", value = 1).otherwise(value = 0)).as("negative_count"),
+        mean(when(col(colName = "sentiment") === "negative", col(colName = "sentiment_confidence")).otherwise(value = 0.0)).as(alias = "negative_confidence_avg"))
+      .withColumn(colName = "load_ts", col = current_timestamp())
 
     // Return Final NLP Data
     nlpData
@@ -88,9 +91,9 @@ object SparkNlpUtils extends SparkSessionWrapper with AwsS3Utils {
       .option("multiLine", value = true) // multiline option
       .option("mode", "DROPMALFORMED") // drops any mal-formatted json records
       .json(jsonRDD).toDF
-      .select(explode(col("data"))) // expands json array root
-      .select("col.*") // expands col json struct
-      .withColumnRenamed(textColumn, "text") // rename title to text
+      .select(explode(col(colName = "data"))) // expands json array root
+      .select(col = "col.*") // expands col json struct
+      .withColumnRenamed(textColumn, newName = "text") // rename title to text
 
     // Return raw DataFrame
     rawRedditData
