@@ -1,7 +1,8 @@
 
 object RedditNlpDataApp extends App {
 
-  //  // Load Submissions
+
+  // Load Submissions
   val submissionParams: Seq[(String, String)] = PreLoadDataUtils.getSubmissionParams
   submissionParams.foreach(param => {
     println(s"SUBMISSIONS STARTING -> TERM: ${param._1} : r/${param._2}")
